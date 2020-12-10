@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+	<template id="assets_frontend" inherit_id="website.assets_frontend">
+		<xpath expr="link[last()]" position="after">
+			<script type="text/javascript" src="/bi_website_real_estate_management/static/src/js/variant.js"></script>
+		</xpath>
+	</template>
+
+	 <template id="get_quotation_in_single_product_page" inherit_id="website_sale.product" active="True" customize_show="True" name="Show Get Quotation">
+		
+			<xpath expr="//form" position="replace">
+			
+				<form t-if="product._is_add_to_cart_possible()" t-att-action="keep('/shop/cart/update')" class="js_add_cart_variants" t-att-data-attribute_value_ids="product.product_variant_ids.ids" method="post">
+				  <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()" />
+						<div class="js_product js_main_product">
+							<t t-placeholder="select">
+                                <input type="hidden" class="product_id" name="product_id" t-att-value="product_variant.id" />
+                                <input type="hidden" class="product_template_id" name="product_template_id" t-att-value="product.id" />
+                                <t t-if="combination" t-call="sale.variants">
+                                    <t t-set="ul_class" t-value="'flex-column'" />
+                                    <t t-set="parent_combination" t-value="None" />
+                                </t>
+                                <t t-else="">
+                                    <ul class="d-none js_add_cart_variants" t-att-data-attribute_exclusions="{'exclusions: []'}"/>
+                                </t>
+                            </t>
+							<t t-call="website_sale.product_price" />
+                            <p t-if="True" class="css_not_available_msg alert alert-warning">This combination does not exist.</p>
+                            <a role="button" id="add_to_cart" class="btn btn-primary btn-lg mt8 js_check_product a-submit" href="#">Add to Cart</a>
+							<a role="button" id="request_quote" style="color:#FFFFFF;" class="btn btn-primary btn-lg mt8">Request Quote</a>
+				  		</div>
+				  		<br/>
+				  		
+				  		<h4 class="page-header">Documents</h4>
+				  		<t t-foreach="product.document_attach_ids" t-as="documents">
+						<div>
+							<a t-attf-href="/web/content/{{documents.id}}?download=true">
+							<span style="width:40px" class="fa fa-download"/><span t-field="documents.store_fname" />
+							</a>
+						</div>
+				  	</t>
+				  	<br/>
+				  	<t t-if="product.site_google_map_link()">
+			            <span class="fa fa-map-marker fa-fw mt16" role="img" aria-label="Address" title="Address"/> <a t-att-href="product.site_google_map_link()" target="_BLANK">Location on Google Map</a>
+			        </t>
+				</form>
+
+			</xpath>
+			
+			
+		</template> 
+		
+		<template id="get_quotation_request" name="Get Quotation Request">
+			<t t-call="website.layout">
+				<t t-set="additional_title">Quote - Request</t>
+				<div id="wrap">
+					<div class="container oe_website_sale">
+						<h3>Quote - Request For <strong> <span t-esc="product_id.product_variant_ids[0].name"/></strong></h3>
+						<form t-attf-action="/shop/product/quote/confirm/" method="post">
+							<input type="hidden" name="csrf_token" t-att-value="request.csrf_token()" />
+							<div class="row">
+								<div class="col-md-12 oe_cart">
+									<div class="row">
+										<div class="row col-md-12">
+											<div t-if="error_message" class="alert alert-danger">
+												<t t-foreach="error_message" t-as="err">
+													<t t-esc="err" />
+													<br />
+												</t>
+											</div>
+										</div>
+									</div>
+									<div class="form-group">
+										<label class="col-md-3 col-sm-4 control-label"> Product </label>
+										<div class="col-md-7 col-sm-8">
+											<b><span t-esc="product_id.product_variant_ids[0].name" style="font-size: 20px;"/></b>
+										</div>
+									</div>
+									
+									<div t-attf-class="form-group #{error and 'name' in error and 'has-error' or ''}">
+										<label class="col-md-3 col-sm-4 control-label" for="name">Your Name</label>
+										<div class="col-md-7 col-sm-8">
+											<input type="text" class="form-control" name="name" required="True" t-att-value="user_id.partner_id.name"/>
+										</div>
+									</div>
+									<div t-attf-class="form-group #{error and 'email' in error and 'has-error' or ''}">
+										<label class="col-md-3 col-sm-4 control-label" for="email">Email</label>
+										<div class="col-md-7 col-sm-8">
+											<input type="email" required="True" name="email" class="form-control" t-att-value="user_id.partner_id.email" />
+										</div>
+									</div>
+									<div t-attf-class="form-group #{error and 'phone' in error and 'has-error' or ''}">
+										<label class="col-md-3 col-sm-4 control-label" for="phone">Phone</label>
+										<div class="col-md-7 col-sm-8">
+											<input type="text" required="True" name="phone" class="form-control" t-att-value="user_id.partner_id.phone"/>
+										</div>
+									</div>
+									<div t-attf-class="form-group #{error and 'location' in error and 'has-error' or ''}">
+										<label class="col-md-3 col-sm-4 control-label" for="location">Property Location</label>
+										<div class="col-md-7 col-sm-8">
+											<input type="text" required="True" name="location" class="form-control" t-att-value="product_id.property_location_id.addr_city"/>
+										</div>
+									</div>
+									<div t-attf-class="form-group #{error and 'property_type' in error and 'has-error' or ''}">
+										<label class="col-md-3 col-sm-4 control-label" for="property_type">Property Type</label>
+										<div class="col-md-7 col-sm-8">
+											<input type="text" required="True" name="property_type" class="form-control" t-att-value="product_id.product_property_type_id.property_name" />
+										</div>
+									</div>
+									<div t-attf-class="form-group #{error and 'comment' in error and 'has-error' or ''}">
+										<label class="col-md-3 col-sm-4 control-label" for="comment">Comment</label>
+										<div class="col-md-7 col-sm-8">
+											<input type="text" required="True" name="comment" class="form-control" />
+										</div>
+									</div>
+									
+									<input name="product_id" t-att-value="product_id.id" type="hidden" />
+									<!-- Pass selected product_id here -->
+										
+									<div t-attf-class="form-group #{error and 'quantity' in error and 'has-error' or ''}">
+										<label class="col-md-3 col-sm-4 control-label" for="quantity">Quantity</label>
+										<div class="col-md-7 col-sm-8">
+											<input type="number" required="True" name="quantity" class="form-control" />
+										</div>
+									</div>
+									<div class="clearfix" />
+									<div class="clearfix">
+										<a href="/shop" class="btn btn-default mb32">
+											<span class="fa fa-long-arrow-left" />
+											Return to Shop
+										</a>
+										<a class="btn btn-default btn-primary pull-right mb32 a-submit">
+											Submit Quote
+											<span class="fa fa-long-arrow-right" />
+										</a>
+									</div>
+								</div>
+							</div>
+						</form>
+					</div>
+				</div>
+			</t>
+		</template>
+		
+		<template id="quote_thankyou" name="Quote Thank You">
+			<t t-call="website.layout">
+				<div id="wrap">
+					<div class="oe_structure" />
+					<div class="container">
+						<h1>Thank you!</h1>
+						<div class="row">
+							<div class="col-md-12">
+								<div class="alert alert-success">
+									Thank you for your Quotation Request...!!! Our Sales Team Will Get Back to you soon...!!!
+									<button type="button" class="close" data-dismiss="alert">&amp;times;
+									</button>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="oe_structure" />
+				</div>
+			</t>
+		</template>		
+		
+</odoo>

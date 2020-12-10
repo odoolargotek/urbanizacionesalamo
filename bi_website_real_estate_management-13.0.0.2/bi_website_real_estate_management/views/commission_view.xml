@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="commission_worksheet_tree_view" model="ir.ui.view">
+            <field name="name">commission.worksheet.tree.view</field>
+            <field name="model">sale.commission.sheet</field>
+            <field name="arch" type="xml">
+                <tree string="Commission Worksheet">													
+	                <field name="name"/>
+	                <field name="sales_partner"/>
+	                <field name="start_date"/>
+	                <field name="end_date"/>
+                </tree>
+		    </field>
+        </record>
+        
+        <record id="commission_worksheet_form_view" model="ir.ui.view">
+            <field name="name">commission.worksheet.form.view</field>
+            <field name="model">sale.commission.sheet</field>
+            <field name="arch" type="xml">
+                <form string="Commission Worksheet">													
+	                <sheet>
+	                    <div class="oe_title">
+                            <h2>
+                                <field name="name" readonly="1"/>
+                            </h2>
+                        </div>
+	                    <group>
+	                        <group>
+	                            <field name="sales_partner"/>
+	                            <field name="start_date"/>
+	                            <field name="end_date"/>
+	                        </group>
+	                        
+	                        <group>
+	                            <field name="commission_product_id"/>
+	                            <field name="company_id"/>
+	                            <field name="total_commission_amt"/>
+	                            <field name="commission_paid"/>
+	                        </group>
+	                    </group>
+	                    <notebook>
+	                        <page string='Commission Lines'>
+	                            <field name="commission_line_ids">
+	                                <tree>
+	                                    <field name="commission_date"/>
+	                                    <field name="sales_partner"/>
+	                                    <field name="source"/>
+	                                    <field name="amount"/>
+	                                    <field name="state"/>
+	                                    <field name="commission_id" invisible='1'/>
+	                                </tree>
+	                            </field>
+	                        </page>
+	                    </notebook>
+	                </sheet>
+                </form>
+		    </field>
+        </record>
+        
+        <record id="commission_lines_tree_view" model="ir.ui.view">
+            <field name="name">commission.lines.tree.view</field>
+            <field name="model">sale.commission.line</field>
+            <field name="arch" type="xml">
+                <tree string="Commission Lines">													
+	                <field name="commission_date"/>
+	                <field name="sales_partner"/>
+	                <field name="source"/>
+	                <field name="amount"/>
+	                <field name="state"/>
+	                <field name="commission_id" invisible='1'/>
+                </tree>
+		    </field>
+        </record>
+        
+        
+        <record id="commission_lines_form_view" model="ir.ui.view">
+            <field name="name">commission.lines.form.view</field>
+            <field name="model">sale.commission.line</field>
+            <field name="arch" type="xml">
+                <form string="Commission Lines">													
+	                <header>
+                        <field name="state" widget='statusbar'/>
+                    </header>
+	                <sheet>
+	                    <group>
+	                        <group>
+	                            <field name="sales_partner"/>
+	                            <field name="commission_date"/>
+	                            <field name="source"/>
+	                        </group>
+	                        
+	                        <group>
+	                            <field name="amount"/>
+	                            <field name="commission_id" invisible='1'/>
+	                        </group>
+	                    </group>
+	                    
+	                </sheet>
+                </form>
+		    </field>
+        </record>
+        
+        
+        
+        <record model="ir.actions.act_window" id="action_open_commission_worksheet">
+            <field name="name">Commission Worksheet</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">sale.commission.sheet</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+       
+        <record model="ir.actions.act_window" id="action_open_commission_lines">
+            <field name="name">Commission Lines</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">sale.commission.line</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+        
+        
+        
+        
+        <menuitem parent="sale.sale_menu_root" id="menu_commission_worksheet" name="Commissions" sequence="25"/>
+        <menuitem parent="menu_commission_worksheet" action="action_open_commission_worksheet" name="Commission Worksheets" id="menu_comm_worksheet"/>
+        <menuitem parent="menu_commission_worksheet" action="action_open_commission_lines" name="Commission Lines" id="menu_comm_lines"/>
+        
+        <menuitem parent="account.menu_finance" id="menu_commission_worksheet_invoice" name="Commissions" sequence="25"/>
+        <menuitem parent="menu_commission_worksheet_invoice" action="action_open_commission_worksheet" name="Commission Worksheets" id="menu_comm_worksheet_inv"/>
+        <menuitem parent="menu_commission_worksheet_invoice" action="action_open_commission_lines" name="Commission Lines" id="menu_comm_lines_inv"/>
+        
+    </data>
+</odoo> 

@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+    <record model="ir.ui.view" id="inherit_view_product_template">
+        <field name="name">inherit.view.product.real.estate</field>
+        <field name="model">product.template</field>
+        <field name="inherit_id" ref="product.product_template_only_form_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//form/sheet/div[@class='oe_title']//div/div[2]" position="after">
+                <div>
+                    <field name="is_real_estate_product"/>
+                    <label for="is_real_estate_product" string='Real Estate Product'/>
+                </div>
+            </xpath>
+            <xpath expr="//form/sheet/notebook" position="inside">
+                <page string='Property Details'>
+                    <group>
+                        <field name="product_property_type_id"/>
+                        <field name="property_location_id"/>
+                    </group>
+                </page>
+                
+                
+            </xpath>
+        </field>
+    </record>
+    
+    <record model="ir.ui.view" id="inherit_view_product_product">
+        <field name="name">inherit.view.product.installments</field>
+        <field name="model">product.product</field>
+        <field name="inherit_id" ref="product.product_normal_form_view"/>
+        <field name="arch" type="xml">
+            
+            <xpath expr="//form/sheet/notebook" position="inside">
+                <page string='Property Details'>
+                    <group>
+                        <field name="no_of_installments"/>
+                    </group>
+                </page>
+            </xpath>
+            
+        </field>
+    </record>
+
+    <record model="ir.ui.view" id="inherit_sale_real_estate">
+        <field name="name">Inherit Sale Order Real Estate</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_order_form"/>
+        <field name="arch" type="xml">
+            
+            <xpath expr="//form/sheet/notebook" position="inside">
+                
+                <page string='Installments'>
+                   <field name="installments_ids">
+                        <tree editable='bottom' readonly='1'>
+                            <field name="company_id" invisible="1"/>
+                            <field name="partner_id"/>
+                            <field name="date"/>
+                            <field name="rel_sale_order" string='Source Document'/>
+                            <field name="invoice_date_due"/>
+                            <field name="amount_total"/>
+                            <field name="amount_residual"/>
+                            <field name="state"/>
+                        </tree>
+                   </field>
+                </page>
+                
+            </xpath>
+            
+            <xpath expr="//form/header/field[@name='state']" position="before">
+                <button name='create_installments' type="object" string="Create Installments" attrs="{'invisible':['|','|',('state', '!=', 'sale'),('installments_is', '=', True),('invoice_count', '>', 0)]}" class="btn-primary"/>
+            </xpath>
+            
+            <xpath expr="//form/sheet/div/button[@name='action_view_invoice']" position="after">
+                <button name="action_view_invoice1"
+                    type="object"
+                    class="oe_stat_button"
+                    icon="fa-pencil-square-o"
+                    string='Installments'
+                    >
+                    
+                </button>
+            </xpath>
+
+            <xpath expr="//field[@name='payment_term_id']" position="after">
+                <field name="installments_is" invisible="1"/>
+            </xpath>
+
+            <xpath expr="//button[@name='%(sale.action_view_sale_advance_payment_inv)d']" position="replace">
+                <button name="%(sale.action_view_sale_advance_payment_inv)d" string="Create Invoice"
+                    type="action" class="btn-primary"
+                    attrs="{'invisible': ['|',('invoice_status', '!=', 'to invoice'),('installments_is', '=', True)]}"/>
+                
+            </xpath>
+            
+        </field>
+    </record>
+    
+    <record id="real_estate_type_tree_view" model="ir.ui.view">
+        <field name="name">real.estate.type.tree.view</field>
+        <field name="model">real.estate.type</field>
+        <field name="arch" type="xml">
+            <tree string="Property Type">													
+	            <field name="property_name"/>
+	            <field name="property_code"/>
+            </tree>
+		</field>
+    </record>
+    
+    <record id="real_estate_type_form_view" model="ir.ui.view">
+        <field name="name">real.estate.type.form.view</field>
+        <field name="model">real.estate.type</field>
+        <field name="arch" type="xml">
+            <form string="Property Type">													
+	            <sheet>
+	                <group>
+	                    <group>
+	                        <field name="property_name"/>
+	                        <field name="property_code"/>
+	                    </group>
+	                </group>
+	            </sheet>
+            </form>
+		</field>
+    </record>
+    
+    <record model="ir.actions.act_window" id="action_open_property_type">
+        <field name="name">Property Types</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">real.estate.type</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+    
+    <record id="property_location_tree_view" model="ir.ui.view">
+        <field name="name">property.location.tree.view</field>
+        <field name="model">property.location</field>
+        <field name="arch" type="xml">
+            <tree string="Property Location">													
+	            <field name="addr1"/>
+	            <field name="addr2"/>
+	            <field name="addr_city"/>
+	            <field name="addr_state"/>
+	            <field name="addr_country"/>
+            </tree>
+		</field>
+    </record>
+    
+    <record id="property_location_form_view" model="ir.ui.view">
+        <field name="name">property.location.form.view</field>
+        <field name="model">property.location</field>
+        <field name="arch" type="xml">
+            <form string="Property Location">													
+	            <sheet>
+	                <group>
+	                    <group>
+	                        <field name="addr1"/>
+	                        <field name="addr2"/>
+	                        <field name="addr_city"/>
+	                        <field name="addr_state"/>
+	                        <field name="addr_country"/>
+	                    </group>
+	                </group>
+	            </sheet>
+            </form>
+		</field>
+    </record>
+    
+    <menuitem parent="sale.sale_menu_root" id="menu_property_type" name="Real Estate Property" sequence="30"/>
+    <menuitem parent="menu_property_type" action="action_open_property_type" name="Property Types" id="menu_type"/>
+            
+    </data>
+</odoo>        
